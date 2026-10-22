@@ -4,6 +4,11 @@
 set -euo pipefail
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+# на повільному емуляторі CI системні застосунки буває «не відповідають» — це вікно лягало поверх скриншотів
+adb shell settings put global hide_error_dialogs 1
+adb shell settings put global anr_show_background 0
+sleep 25  # хай емулятор довантажиться, перш ніж знімати
+adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS > /dev/null || true
 demo() { adb shell am broadcast -a com.android.systemui.demo -e command "$@" > /dev/null; }
 adb shell settings put global sysui_demo_allowed 1
 demo enter
