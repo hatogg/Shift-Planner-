@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shift Planner</string>
+    <string name="widget_name">Моя зміна</string>
+    <string name="widget_desc">Сьогоднішня й наступна зміна та найближчий тиждень</string>
+</resources>

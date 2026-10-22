@@ -1,0 +1,65 @@
+# Збирає APK і викладає його в реліз «v<versionName>» (кожен push у main оновлює файл у релізі).
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Build
+        id: build
+        run: |
+          set -o pipefail
+          chmod +x gradlew
+          ./gradlew assembleRelease --console=plain 2>&1 | tee build.log
+      - name: Why it failed
+        if: failure() && steps.build.outcome == 'failure'
+        run: python3 .github/annotate.py build.log
+      - name: Name the file
+        id: v
+        run: |
+          v="$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)"
+          echo "name=$v" >> "$GITHUB_OUTPUT"
+          cp app/build/outputs/apk/release/app-release.apk "ShiftPlanner-$v.apk"
+          ls -la ShiftPlanner-*.apk
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ShiftPlanner-apk
+          path: ShiftPlanner-*.apk
+      - name: Publish to the release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          V: ${{ steps.v.outputs.name }}
+        run: |
+          tag="v$V"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            gh release upload "$tag" "ShiftPlanner-$V.apk" --clobber
+          else
+            cat > notes.md <<'NOTES'
+          **Як встановити:** завантажте `.apk` нижче на телефоні, відкрийте його й дозвольте встановлення з цього джерела. Нові версії ставляться поверх старої, дані зберігаються.
+
+          Календар змін: свої типи змін (назва, колір, час), шаблони графіка (2/2, день-ніч тощо), нотатки, статистика годин і заробітку, віджет на головний екран.
+          NOTES
+            gh release create "$tag" "ShiftPlanner-$V.apk" --target "$GITHUB_SHA" --title "Shift Planner $V" --notes-file notes.md
+          fi
