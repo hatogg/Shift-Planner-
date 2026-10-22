@@ -9,8 +9,12 @@ import java.util.Locale
 
 /** Тексти інтерфейсу: українська (також для ru/be) або англійська — за мовою телефона. */
 object L {
-    private val ukr = Locale.getDefault().language in setOf("uk", "ru", "be")
-    val locale: Locale = if (ukr) Locale.forLanguageTag("uk") else Locale.ENGLISH
+    /** Мову можна задати явно (скриншоти в CI знімаються обома мовами); null — мова телефона. */
+    @Volatile
+    var override: String? = null
+
+    private val ukr: Boolean get() = (override ?: Locale.getDefault().language) in setOf("uk", "ru", "be")
+    val locale: Locale get() = if (ukr) Locale.forLanguageTag("uk") else Locale.ENGLISH
 
     private fun t(uk: String, en: String) = if (ukr) uk else en
 
