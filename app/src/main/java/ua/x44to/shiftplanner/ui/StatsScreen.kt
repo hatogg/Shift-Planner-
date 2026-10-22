@@ -67,7 +67,7 @@ fun StatsScreen(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             StatTile(L.totalShifts, st.shifts.toString(), Modifier.weight(1f))
-            StatTile(L.totalHours, L.hours(st.hours), Modifier.weight(1f))
+            StatTile(L.totalHours, L.hours(st.hours).removeSuffix(" " + L.hoursShort), Modifier.weight(1f))
             StatTile(L.daysOff, st.daysOff.toString(), Modifier.weight(1f))
         }
         if (data.settings.hourlyRate > 0) {

@@ -28,7 +28,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -103,17 +103,18 @@ fun CalendarScreen(modifier: Modifier = Modifier) {
                     onDay = { selected = it },
                 )
             }
-            Spacer(Modifier.height(12.dp))
+            FilledTonalButton(
+                onClick = { patternDialog = true },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp).height(52.dp),
+            ) {
+                Icon(Icons.Filled.Repeat, contentDescription = null)
+                Spacer(Modifier.width(10.dp))
+                Text(L.applyPattern, style = MaterialTheme.typography.titleSmall)
+            }
             TodayCard(data)
             MonthSummary(month, data)
-            Spacer(Modifier.height(96.dp))
+            Spacer(Modifier.height(16.dp))
         }
-        ExtendedFloatingActionButton(
-            onClick = { patternDialog = true },
-            icon = { Icon(Icons.Filled.Repeat, contentDescription = null) },
-            text = { Text(L.applyPattern) },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-        )
     }
 
     selected?.let { date ->

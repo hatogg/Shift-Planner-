@@ -225,12 +225,8 @@ private fun ShiftTypeDialog(initial: ShiftType, isNew: Boolean, onDismiss: () ->
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = { picking = "start" }, modifier = Modifier.weight(1f)) {
-                        Text("${L.start}: $start")
-                    }
-                    OutlinedButton(onClick = { picking = "end" }, modifier = Modifier.weight(1f)) {
-                        Text("${L.end}: $end")
-                    }
+                    TimeButton(L.start, start, Modifier.weight(1f)) { picking = "start" }
+                    TimeButton(L.end, end, Modifier.weight(1f)) { picking = "end" }
                 }
                 OutlinedTextField(
                     value = breakMin, onValueChange = { v -> breakMin = v.filter { it.isDigit() }.take(3) },
@@ -264,6 +260,17 @@ private fun ShiftTypeDialog(initial: ShiftType, isNew: Boolean, onDismiss: () ->
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(L.cancel) } },
     )
+}
+
+/** Кнопка часу: дрібний підпис над великим часом (у вузькому діалозі «Початок: 08:00» розривався на два рядки). */
+@Composable
+private fun TimeButton(label: String, time: String, modifier: Modifier, onClick: () -> Unit) {
+    OutlinedButton(onClick = onClick, modifier = modifier) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(label, style = MaterialTheme.typography.labelSmall)
+            Text(time, style = MaterialTheme.typography.titleMedium)
+        }
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
