@@ -2,6 +2,8 @@ package ua.x44to.shiftplanner
 
 import android.graphics.Bitmap
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
@@ -54,10 +56,10 @@ class ScreenshotTest {
                 shot("$lang-light-template")
                 tap(L.cancel)
                 settle()
-                tap(L.stats)
+                tab(L.stats)
                 settle()
                 shot("$lang-light-stats")
-                tap(L.shifts)
+                tab(L.shifts)
                 settle()
                 shot("$lang-light-shifts")
                 compose.onAllNodesWithText(L.defDay, useUnmergedTree = true)[0].performClick()
@@ -70,10 +72,10 @@ class ScreenshotTest {
             ActivityScenario.launch(MainActivity::class.java).use {
                 settle()
                 shot("$lang-dark-calendar")
-                tap(L.stats)
+                tab(L.stats)
                 settle()
                 shot("$lang-dark-stats")
-                tap(L.shifts)
+                tab(L.shifts)
                 settle()
                 shot("$lang-dark-shifts")
             }
@@ -85,6 +87,11 @@ class ScreenshotTest {
     /** Натиснути на текст: шукаємо в повному дереві (у FAB текст не зливається з кнопкою), тап — у центр тексту. */
     private fun tap(text: String) {
         compose.onAllNodesWithText(text, useUnmergedTree = true)[0].performClick()
+    }
+
+    /** Вкладка внизу: лише вибірний елемент навігації (у статистиці є плитка з тим самим словом «Shifts»). */
+    private fun tab(text: String) {
+        compose.onNode(hasText(text) and isSelectable()).performClick()
     }
 
     private fun settle() {
