@@ -3,7 +3,6 @@ package ua.x44to.shiftplanner
 import android.graphics.Bitmap
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -45,42 +44,47 @@ class ScreenshotTest {
             ActivityScenario.launch(MainActivity::class.java).use {
                 settle()
                 shot("$lang-light-calendar")
-                compose.onNodeWithText("18").performClick()
+                tap("18")
                 settle()
                 shot("$lang-light-day")
-                compose.onNodeWithText(L.save).performClick()
+                tap(L.save)
                 settle()
-                compose.onNodeWithText(L.applyPattern).performClick()
+                tap(L.applyPattern)
                 settle()
                 shot("$lang-light-template")
-                compose.onNodeWithText(L.cancel).performClick()
+                tap(L.cancel)
                 settle()
-                compose.onNodeWithText(L.stats).performClick()
+                tap(L.stats)
                 settle()
                 shot("$lang-light-stats")
-                compose.onNodeWithText(L.shifts).performClick()
+                tap(L.shifts)
                 settle()
                 shot("$lang-light-shifts")
-                compose.onAllNodesWithText(L.defDay)[0].performClick()
+                compose.onAllNodesWithText(L.defDay, useUnmergedTree = true)[0].performClick()
                 settle()
                 shot("$lang-light-shift-edit")
-                compose.onNodeWithText(L.cancel).performClick()
+                tap(L.cancel)
                 settle()
             }
             shell("cmd uimode night yes")
             ActivityScenario.launch(MainActivity::class.java).use {
                 settle()
                 shot("$lang-dark-calendar")
-                compose.onNodeWithText(L.stats).performClick()
+                tap(L.stats)
                 settle()
                 shot("$lang-dark-stats")
-                compose.onNodeWithText(L.shifts).performClick()
+                tap(L.shifts)
                 settle()
                 shot("$lang-dark-shifts")
             }
         }
         shell("cmd uimode night no")
         L.override = null
+    }
+
+    /** Натиснути на текст: шукаємо в повному дереві (у FAB текст не зливається з кнопкою), тап — у центр тексту. */
+    private fun tap(text: String) {
+        compose.onAllNodesWithText(text, useUnmergedTree = true)[0].performClick()
     }
 
     private fun settle() {
